@@ -1,6 +1,8 @@
 using MediatR;
 using ContactInfo.App.Repositories;
 using ContactInfo.App.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace ContactInfo.App.Queries;
 
@@ -16,7 +18,7 @@ public class GetPersonListQueryHandler : IRequestHandler<GetPersonListQuery, Med
     public Task<MediatorResult<IList<Person>>> Handle(GetPersonListQuery query, CancellationToken cancellationToken)
     {
         var username = query?.Claims?.Identity?.Name;
-        var userId = query?.Claims?.FindFirst("sub")?.Value;
+        var userId = query?.Claims?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(userId))
         {

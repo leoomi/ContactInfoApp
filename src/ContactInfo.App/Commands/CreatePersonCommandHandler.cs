@@ -1,7 +1,7 @@
 using MediatR;
-using BC = BCrypt.Net.BCrypt;
 using ContactInfo.App.Models;
 using ContactInfo.App.Repositories;
+using System.Security.Claims;
 
 namespace ContactInfo.App.Commands;
 
@@ -17,7 +17,7 @@ public class CreatePersonCommandHandler : IRequestHandler<CreatePersonCommand, M
     public Task<MediatorResult<Person>> Handle(CreatePersonCommand command, CancellationToken cancellationToken)
     {
         var username = command?.Claims?.Identity?.Name;
-        var sub = command?.Claims?.FindFirst("sub")?.Value;
+        var sub = command?.Claims?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(sub))
         {

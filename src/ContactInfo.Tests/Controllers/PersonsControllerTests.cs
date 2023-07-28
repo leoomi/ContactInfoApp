@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using ContactInfo.App.Commands;
 using ContactInfo.App.Controllers;
 using ContactInfo.App.Models;
@@ -37,7 +38,10 @@ public class PersonsControllerTest
         };
         var mediatorResult = new MediatorResult<IList<Person>>(personList);
         _mediatorMock
-            .Setup(m => m.Send(It.IsAny<GetPersonListQuery>(), default))
+            .Setup(m => m.Send(It.Is<GetPersonListQuery>(q =>
+                q.Claims!.Identity!.Name == username &&
+                q.Claims!.FindFirst(ClaimTypes.NameIdentifier)!.Value == userId.ToString()
+            ), default))
             .ReturnsAsync(mediatorResult)
             .Verifiable();
 
@@ -45,7 +49,7 @@ public class PersonsControllerTest
 
         Assert.IsType<OkObjectResult>(result.Result);
         var okResult = (OkObjectResult) result.Result;
-        Assert.Equal(mediatorResult, okResult.Value);
+        Assert.Equal(personList, okResult.Value);
         _mediatorMock.Verify();
     }
 
@@ -66,7 +70,7 @@ public class PersonsControllerTest
             .Setup(m => m
                 .Send(It.Is<SavePersonCommand>(c =>
                     c.Claims!.Identity!.Name == username &&
-                    c.Claims!.FindFirst("sub")!.Value == userId.ToString()
+                    c.Claims!.FindFirst(ClaimTypes.NameIdentifier)!.Value == userId.ToString()
                 ), default))
             .ReturnsAsync(mediatorResult)
             .Verifiable();
@@ -102,7 +106,7 @@ public class PersonsControllerTest
             .Setup(m => m
                 .Send(It.Is<SavePersonCommand>(c =>
                     c.Claims!.Identity!.Name == username &&
-                    c.Claims!.FindFirst("sub")!.Value == userId.ToString()
+                    c.Claims!.FindFirst(ClaimTypes.NameIdentifier)!.Value == userId.ToString()
                 ), default))
             .ReturnsAsync(mediatorResult)
             .Verifiable();
@@ -132,7 +136,7 @@ public class PersonsControllerTest
             .Setup(m => m
                 .Send(It.Is<CreatePersonCommand>(c =>
                     c.Claims!.Identity!.Name == username &&
-                    c.Claims!.FindFirst("sub")!.Value == userId.ToString()
+                    c.Claims!.FindFirst(ClaimTypes.NameIdentifier)!.Value == userId.ToString()
                 ), default))
             .ReturnsAsync(mediatorResult)
             .Verifiable();
@@ -166,7 +170,7 @@ public class PersonsControllerTest
             .Setup(m => m
                 .Send(It.Is<CreatePersonCommand>(c =>
                     c.Claims!.Identity!.Name == username &&
-                    c.Claims!.FindFirst("sub")!.Value == userId.ToString()
+                    c.Claims!.FindFirst(ClaimTypes.NameIdentifier)!.Value == userId.ToString()
                 ), default))
             .ReturnsAsync(mediatorResult)
             .Verifiable();

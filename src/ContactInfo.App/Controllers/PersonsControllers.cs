@@ -35,7 +35,7 @@ public class PersonsController : ControllerBase
             Claims = User
         });
 
-        return Ok(result);
+        return Ok(result.Value);
     }
 
     [HttpPost]

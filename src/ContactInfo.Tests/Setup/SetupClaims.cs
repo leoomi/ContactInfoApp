@@ -10,7 +10,7 @@ public static class SetupClaims
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, name),
-            new Claim(JwtRegisteredClaimNames.Sub, id.ToString())
+            new Claim(ClaimTypes.NameIdentifier, id.ToString())
         };
         var claimsIdentity = new ClaimsIdentity(claims);
 
