@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using ContactInfo.App.Commands;
 using ContactInfo.App.Controllers;
 using ContactInfo.App.Models;

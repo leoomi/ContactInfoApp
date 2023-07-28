@@ -1,5 +1,4 @@
 using MediatR;
-using ContactInfo.App.Models;
 using System.Security.Claims;
 
 namespace ContactInfo.App.Commands;

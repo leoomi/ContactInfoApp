@@ -101,6 +101,35 @@ public class PersonRepositoryTests : IDisposable
         Assert.True(_context.People!.Any(u => u.Id == 1));
     }
 
+    [Fact]
+    public void GetPersonList_ReturnsAllPeopleFromUser()
+    {
+        var user = CreateUser();
+
+        for (var i = 0; i < 5; i++)
+        {
+            CreatePerson(user.Id);
+        }
+
+        var result = _repository.GetPersonList(user.Id);
+
+        Assert.Equal(5, result.Count);
+        Assert.True(result.All(p => p.UserId == user.Id));
+    }
+
+    private Person CreatePerson(int userId)
+    {
+        var person = new Person
+        {
+            FirstName = "First",
+            LastName = "Last",
+            UserId = userId
+        };
+        _repository.CreatePerson(person);
+
+        return person;
+    }
+
     private User CreateUser()
     {
         var user = new User

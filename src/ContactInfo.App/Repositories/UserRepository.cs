@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using ContactInfo.App.Models;
 
 namespace ContactInfo.App.Repositories;

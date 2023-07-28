@@ -1,5 +1,4 @@
 using MediatR;
-using BC = BCrypt.Net.BCrypt;
 using ContactInfo.App.Models;
 using ContactInfo.App.Repositories;
 

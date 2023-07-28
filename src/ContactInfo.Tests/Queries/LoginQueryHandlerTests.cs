@@ -3,7 +3,6 @@ using ContactInfo.App.Models;
 using ContactInfo.App.Queries;
 using ContactInfo.App.Repositories;
 using ContactInfo.App.Services;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace ContactInfo.Tests.Queries;
 
