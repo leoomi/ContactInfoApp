@@ -19,6 +19,13 @@ public class UserRepository : IUserRepository
         return user;
     }
 
+    public User SaveUser(User user)
+    {
+        context.Update(user);
+        context.SaveChanges();
+        return user;
+    }
+
     public User? GetUserByUsername(string username)
     {
         return context.Users!

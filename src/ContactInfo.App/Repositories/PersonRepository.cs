@@ -12,14 +12,25 @@ public class PersonRepository : IPersonRepository
         _context = context;
     }
 
-    public IList<Person> GetPersonList(string username)
+    public Person CreatePerson(Person person)
     {
-        var user = _context?.Users?.FirstOrDefault(u => u.Username == username);
-        if (user == null)
-        {
-            return new List<Person>();
-        }
+        _context.Add(person);
+        _context.SaveChanges();
 
-        return user.People ?? new List<Person>();
+        return person;
+    }
+
+    public Person SavePerson(Person person)
+    {
+        _context.Update(person);
+        _context.SaveChanges();
+
+        return person;
+    }
+
+    public IList<Person> GetPersonList(int userId)
+    {
+        var people = _context?.People?.Where(p => p.UserId == userId).ToList();;
+        return people ?? new List<Person>();
     }
 }

@@ -18,7 +18,8 @@ public class TokenService
         {
             Subject = new ClaimsIdentity(new Claim[]
             {
-                    new Claim(ClaimTypes.Name, user.Username!.ToString())
+                new Claim(ClaimTypes.Name, user.Username!.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString())
             }),
             Expires = DateTime.UtcNow.AddHours(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(GetKey()), SecurityAlgorithms.HmacSha256Signature)

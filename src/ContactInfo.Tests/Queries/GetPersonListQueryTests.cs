@@ -1,9 +1,6 @@
-using BC = BCrypt.Net.BCrypt;
 using ContactInfo.App.Models;
 using ContactInfo.App.Queries;
 using ContactInfo.App.Repositories;
-using ContactInfo.App.Services;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace ContactInfo.Tests.Queries;
 
@@ -23,10 +20,10 @@ public class GetPersonListQueryHandlerTests
     {
         var query = new GetPersonListQuery
         {
-            Username = "username",
+            UserId = 1,
         };
         _personRepositoryMock
-            .Setup(m => m.GetPersonList(query.Username))
+            .Setup(m => m.GetPersonList(query.UserId))
             .Returns(new List<Person>())
             .Verifiable();
 
@@ -41,7 +38,7 @@ public class GetPersonListQueryHandlerTests
     {
         var query = new GetPersonListQuery
         {
-            Username = "username",
+            UserId = 1,
         };
         var personList = new List<Person>
         {
@@ -49,7 +46,7 @@ public class GetPersonListQueryHandlerTests
             new Person{ FirstName = "Name 2" },
         };
         _personRepositoryMock
-            .Setup(m => m.GetPersonList(query.Username))
+            .Setup(m => m.GetPersonList(query.UserId))
             .Returns(personList)
             .Verifiable();
 

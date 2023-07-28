@@ -40,7 +40,8 @@ public class PersonsControllerTest
     public async Task GetPersonList_Authenticated_ReturnsOkList()
     {
         var username = "username";
-        SetupClaims.AddUserName(_controller, username);
+        var userId = 1;
+        SetupClaims.AddUserInfo(_controller, username, userId);
 
         var personList = new List<Person>{
             new Person { FirstName = "name1"},

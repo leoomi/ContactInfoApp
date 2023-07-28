@@ -25,7 +25,7 @@ namespace ContactInfo.App.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Persons",
+                name: "People",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -36,9 +36,9 @@ namespace ContactInfo.App.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Persons", x => x.Id);
+                    table.PrimaryKey("PK_People", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Persons_Users_UserId",
+                        name: "FK_People_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -59,9 +59,9 @@ namespace ContactInfo.App.Migrations
                 {
                     table.PrimaryKey("PK_Contacts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Contacts_Persons_PersonId",
+                        name: "FK_Contacts_People_PersonId",
                         column: x => x.PersonId,
-                        principalTable: "Persons",
+                        principalTable: "People",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -72,8 +72,8 @@ namespace ContactInfo.App.Migrations
                 column: "PersonId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Persons_UserId",
-                table: "Persons",
+                name: "IX_People_UserId",
+                table: "People",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -90,7 +90,7 @@ namespace ContactInfo.App.Migrations
                 name: "Contacts");
 
             migrationBuilder.DropTable(
-                name: "Persons");
+                name: "People");
 
             migrationBuilder.DropTable(
                 name: "Users");

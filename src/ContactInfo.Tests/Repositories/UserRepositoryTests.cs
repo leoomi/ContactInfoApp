@@ -82,6 +82,26 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
+    public void SaveUser_EditUsernameAndPassword()
+    {
+        var user = new User
+        {
+            Username = "username",
+            Password = "password",
+        };
+        _repository.CreateUser(user);
+
+        user.Username = "username2";
+        user.Password = "password2";
+        var result = _repository.SaveUser(user);
+
+        Assert.Equal(user, result);
+        Assert.Equal("username2", result.Username);
+        Assert.Equal("password2", result.Password);
+        Assert.Equal(1, _context.Users!.Count());
+    }
+
+    [Fact]
     public void GetUserByUsername_ExistingUser_ReturnsUser()
     {
         var user = new User

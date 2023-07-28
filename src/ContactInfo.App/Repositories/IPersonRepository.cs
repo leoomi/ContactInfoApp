@@ -4,5 +4,5 @@ namespace ContactInfo.App.Repositories;
 
 public interface IPersonRepository
 {
-    IList<Person> GetPersonList(string username);
+    IList<Person> GetPersonList(int userId);
 }

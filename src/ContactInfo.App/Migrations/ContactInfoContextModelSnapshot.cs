@@ -57,7 +57,7 @@ namespace ContactInfo.App.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Persons");
+                    b.ToTable("People");
                 });
 
             modelBuilder.Entity("ContactInfo.App.Models.User", b =>
@@ -92,7 +92,7 @@ namespace ContactInfo.App.Migrations
             modelBuilder.Entity("ContactInfo.App.Models.Person", b =>
                 {
                     b.HasOne("ContactInfo.App.Models.User", null)
-                        .WithMany("Persons")
+                        .WithMany("People")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -105,7 +105,7 @@ namespace ContactInfo.App.Migrations
 
             modelBuilder.Entity("ContactInfo.App.Models.User", b =>
                 {
-                    b.Navigation("Persons");
+                    b.Navigation("People");
                 });
 #pragma warning restore 612, 618
         }

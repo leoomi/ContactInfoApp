@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using FluentValidation;
 using ContactInfo.App.Commands;
@@ -30,14 +31,16 @@ public class PersonsController : ControllerBase
     [Authorize]
     public async Task<ActionResult<IList<Person>>> GetPersonList()
     {
-        if (User?.Identity?.Name == null)
+        var user =  User?.Identity?.Name;
+        var id = User?.FindFirst("sub")?.Value;
+        if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(id))
         {
             return Unauthorized();
         }
 
         var result = await _mediator.Send(new GetPersonListQuery
         {
-            Username = User.Identity.Name,
+            UserId = int.Parse(id)
         });
         return Ok(result);
     }

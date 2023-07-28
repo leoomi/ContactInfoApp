@@ -17,7 +17,7 @@ public class GetPersonListQueryHandler: IRequestHandler<GetPersonListQuery, ILis
 
     public Task<IList<Person>> Handle(GetPersonListQuery query, CancellationToken cancellationToken)
     {
-        var result = _personRepository.GetPersonList(query.Username!);
+        var result = _personRepository.GetPersonList(query.UserId);
         return Task.FromResult(result);
     }
 }
