@@ -72,7 +72,7 @@ public class PersonsControllerTest
             .ReturnsAsync(mediatorResult)
             .Verifiable();
 
-        var result = await _controller.SavePerson(command);
+        var result = await _controller.SavePerson(command, 1);
 
         Assert.IsType<UnauthorizedResult>(result.Result);
         _mediatorMock.Verify();
@@ -108,7 +108,71 @@ public class PersonsControllerTest
             .ReturnsAsync(mediatorResult)
             .Verifiable();
 
-        var result = await _controller.SavePerson(command);
+        var result = await _controller.SavePerson(command, 1);
+
+        Assert.IsType<OkObjectResult>(result.Result);
+        var okResult = (OkObjectResult) result.Result;
+
+        Assert.Equal(person, okResult.Value);
+        _mediatorMock.Verify();
+    }
+
+    [Fact]
+    public async Task CreatePerson_MediatorError_ReturnsError()
+    {
+        var username = "username";
+        var userId = 1;
+        SetupClaims.AddUserInfo(_controller, username, userId);
+
+        var mediatorResult = new MediatorResult<Person>(MediatorError.Unauthorized);
+        var command = new CreatePersonCommand
+        {
+            FirstName = "First",
+        };
+        _mediatorMock
+            .Setup(m => m
+                .Send(It.Is<CreatePersonCommand>(c =>
+                    c.Claims!.Identity!.Name == username &&
+                    c.Claims!.FindFirst("sub")!.Value == userId.ToString()
+                ), default))
+            .ReturnsAsync(mediatorResult)
+            .Verifiable();
+
+        var result = await _controller.CreatePerson(command);
+
+        Assert.IsType<UnauthorizedResult>(result.Result);
+        _mediatorMock.Verify();
+    }
+
+    [Fact]
+    public async Task CreatePerson_SuccesfulCall_ReturnsOkPerson()
+    {
+        var username = "username";
+        var userId = 1;
+        SetupClaims.AddUserInfo(_controller, username, userId);
+
+        var person = new Person
+        {
+            Id = 1,
+            UserId = userId,
+            FirstName = "First"
+        };
+        var mediatorResult = new MediatorResult<Person>(person);
+        var command = new CreatePersonCommand
+        {
+            FirstName = "First",
+        };
+
+        _mediatorMock
+            .Setup(m => m
+                .Send(It.Is<CreatePersonCommand>(c =>
+                    c.Claims!.Identity!.Name == username &&
+                    c.Claims!.FindFirst("sub")!.Value == userId.ToString()
+                ), default))
+            .ReturnsAsync(mediatorResult)
+            .Verifiable();
+
+        var result = await _controller.CreatePerson(command);
 
         Assert.IsType<OkObjectResult>(result.Result);
         var okResult = (OkObjectResult) result.Result;

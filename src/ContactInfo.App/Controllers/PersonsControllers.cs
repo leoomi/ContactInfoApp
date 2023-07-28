@@ -56,8 +56,13 @@ public class PersonsController : ControllerBase
     [HttpPost]
     [Authorize]
     [Route("{id}")]
-    public async Task<ActionResult<Person>> SavePerson(SavePersonCommand command)
+    public async Task<ActionResult<Person>> SavePerson(SavePersonCommand command, int id)
     {
+        if (command.Id != id)
+        {
+            return BadRequest();
+        }
+
         command.Claims = User;
         var result = await _mediator.Send(command);
 

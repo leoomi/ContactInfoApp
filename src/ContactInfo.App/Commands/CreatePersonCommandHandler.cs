@@ -17,18 +17,19 @@ public class CreatePersonCommandHandler : IRequestHandler<CreatePersonCommand, M
     public Task<MediatorResult<Person>> Handle(CreatePersonCommand command, CancellationToken cancellationToken)
     {
         var username = command?.Claims?.Identity?.Name;
-        var userId = command?.Claims?.FindFirst("sub")?.Value;
+        var sub = command?.Claims?.FindFirst("sub")?.Value;
 
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(userId))
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(sub))
         {
             return Task.FromResult(new MediatorResult<Person>(MediatorError.Unauthorized));
         }
 
+        var userId = int.Parse(sub);
         var createdPerson = _personRepository.CreatePerson(new Person
         {
             FirstName = command!.FirstName,
             LastName = command.LastName,
-            UserId = command.UserId!.Value,
+            UserId = userId,
             Contacts = command.Contacts
         });
 
