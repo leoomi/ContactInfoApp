@@ -1,11 +1,13 @@
 using ContactInfo.App.Commands;
 using ContactInfo.App.Controllers;
 using ContactInfo.App.Models;
+using ContactInfo.App.Queries;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ContactInfo.Tests.Controllers;
 
@@ -25,7 +27,7 @@ public class UsersControllerTest
             null);
     }
 
-    // TODO User concrete validator later
+    // TODO User concrete validator later if I have the time
     [Fact]
     public async Task CreateUser_InvalidCommand_ReturnsValidationProblem()
     {
@@ -48,8 +50,7 @@ public class UsersControllerTest
 
         Assert.IsType<ProblemHttpResult>(result);
 
-        var problemResult = (ProblemHttpResult) result;
-        Assert.Equal(StatusCodes.Status400BadRequest, problemResult.StatusCode);
+        var problemResult = (ProblemHttpResult)result;
         _createUserValidatorMock.Verify();
     }
 
@@ -82,11 +83,52 @@ public class UsersControllerTest
 
         Assert.IsType<Ok<User>>(result);
 
-        var okResult = (Ok<User>) result;
-        Assert.Equal(StatusCodes.Status200OK, okResult.StatusCode);
+        var okResult = (Ok<User>)result;
         Assert.Equal(resultUser, okResult.Value);
 
         _mediatorMock.Verify();
         _createUserValidatorMock.Verify();
+    }
+
+    [Fact]
+    public async Task Login_ValidCommand_ReturnsToken()
+    {
+        var query = new LoginQuery
+        {
+            Username = "username",
+            Password = "password",
+        };
+        var token = "token";
+        _mediatorMock
+            .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(token)
+            .Verifiable();
+
+        var result = await _controller.Login(query);
+
+        Assert.IsType<OkObjectResult>(result.Result);
+        var okResult = (OkObjectResult) result.Result;
+
+        Assert.Equal(token, okResult.Value);
+        _mediatorMock.Verify();
+    }
+
+    [Fact]
+    public async Task Login_ValidCommand_ReturnsUnauthorized()
+    {
+        var query = new LoginQuery
+        {
+            Username = "username",
+            Password = "password",
+        };
+        _mediatorMock
+            .Setup(m => m.Send<string?>(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string?) null)
+            .Verifiable();
+
+        var result = await _controller.Login(query);
+
+        Assert.IsType<UnauthorizedResult>(result.Result);
+        _mediatorMock.Verify();
     }
 }

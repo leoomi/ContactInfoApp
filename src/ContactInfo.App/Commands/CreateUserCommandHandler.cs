@@ -1,4 +1,5 @@
 using MediatR;
+using BC = BCrypt.Net.BCrypt;
 using ContactInfo.App.Models;
 using ContactInfo.App.Repositories;
 
@@ -15,9 +16,10 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, User>
 
     public Task<User> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
+        var hashedPassword = BC.HashPassword(command.Password);
         var createdUser = _userRepository.CreateUser(new User{
             Username = command.Username,
-            Password = command.Password
+            Password = hashedPassword
         });
 
         return Task.FromResult(createdUser);

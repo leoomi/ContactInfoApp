@@ -4,39 +4,42 @@ using FluentValidation;
 using ContactInfo.App.Commands;
 using Microsoft.AspNetCore.Authorization;
 using ContactInfo.App.Queries;
+using ContactInfo.App.Models;
 
 namespace ContactInfo.App.Controllers;
 
 [ApiController]
-[Route("/api/users/")]
-public class UsersController : ControllerBase
+[Route("/api/persons/")]
+public class PersonsController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly IValidator<CreateUserCommand> _createUserValidator;
-    private readonly ILogger<UsersController> _logger;
+    private readonly ILogger<PersonsController> _logger;
 
-    public UsersController(
+    public PersonsController(
         IMediator mediator,
         IValidator<CreateUserCommand> createUserValidator,
-        ILogger<UsersController> logger)
+        ILogger<PersonsController> logger)
     {
         _mediator = mediator;
         _createUserValidator = createUserValidator;
         _logger = logger;
     }
 
-    [HttpPost]
-    [AllowAnonymous]
-    public async Task<IResult> CreateUser(CreateUserCommand command)
+    [HttpGet]
+    [Authorize]
+    public async Task<ActionResult<IList<Person>>> GetPersonList()
     {
-        var validation = await _createUserValidator.ValidateAsync(command);
-        if (!validation.IsValid) {
-            return Results.ValidationProblem(validation.ToDictionary());
+        if (User?.Identity?.Name == null)
+        {
+            return Unauthorized();
         }
 
-        var result = await _mediator.Send(command);
-        result.Password = null;
-        return Results.Ok(result);
+        var result = await _mediator.Send(new GetPersonListQuery
+        {
+            Username = User.Identity.Name,
+        });
+        return Ok(result);
     }
 
     [HttpPost]

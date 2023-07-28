@@ -82,7 +82,7 @@ public class UserRepositoryTests : IDisposable
     }
 
     [Fact]
-    public void Login_ExistingUser_ReturnsUser()
+    public void GetUserByUsername_ExistingUser_ReturnsUser()
     {
         var user = new User
         {
@@ -91,12 +91,12 @@ public class UserRepositoryTests : IDisposable
         };
         _repository.CreateUser(user);
 
-        var result = _repository.Login(user.Username, user.Password);
+        var result = _repository.GetUserByUsername(user.Username);
         Assert.Equal(user, result);
     }
 
     [Fact]
-    public void Login_NonExistingUser_ReturnsNull()
+    public void GetUserByUsername_NonExistingUser_ReturnsNull()
     {
         var user = new User
         {
@@ -105,7 +105,7 @@ public class UserRepositoryTests : IDisposable
         };
         _repository.CreateUser(user);
 
-        var result = _repository.Login("username2", "password");
+        var result = _repository.GetUserByUsername("username2");
         Assert.Null(result);
     }
 }

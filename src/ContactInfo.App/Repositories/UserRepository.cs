@@ -19,10 +19,9 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public User? Login(string username, string password)
+    public User? GetUserByUsername(string username)
     {
         return context.Users!
-            .FirstOrDefault(u => u.Username == username &&
-                u.Password == password);
+            .FirstOrDefault(u => u.Username == username);
     }
 }

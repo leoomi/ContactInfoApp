@@ -1,9 +1,7 @@
 using ContactInfo.App.Commands;
 using ContactInfo.App.Repositories;
+using ContactInfo.App.Services;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using SQLitePCL;
 
 namespace ContactInfo.App;
 
@@ -14,6 +12,7 @@ public static class DependencyInjection
         services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(Program).Assembly));
         services.AddScoped<IValidator<CreateUserCommand>, CreateUserCommandValidator>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<TokenService, TokenService>();
         services.AddScoped(_ =>
         {
 

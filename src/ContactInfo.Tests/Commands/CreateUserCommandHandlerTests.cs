@@ -1,92 +1,66 @@
 using ContactInfo.App.Commands;
-using ContactInfo.App.Controllers;
 using ContactInfo.App.Models;
-using FluentValidation;
-using FluentValidation.Results;
-using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+using ContactInfo.App.Repositories;
 
-namespace ContactInfo.Tests;
+namespace ContactInfo.Tests.Commands;
 
-public class UsersControllerTest
+public class CreateUserCommandHandlerTests
 {
-    private readonly UsersController _controller;
-    private readonly Mock<IMediator> _mediatorMock;
-    private readonly Mock<IValidator<CreateUserCommand>> _createUserValidatorMock;
+    private readonly CreateUserCommandHandler _handler;
+    private readonly Mock<IUserRepository> _userRepositoryMock;
 
-    public UsersControllerTest()
+    public CreateUserCommandHandlerTests()
     {
-        _mediatorMock = new Mock<IMediator>();
-        _createUserValidatorMock = new Mock<IValidator<CreateUserCommand>>();
-        _controller = new UsersController(
-            _mediatorMock.Object,
-            _createUserValidatorMock.Object,
-            null);
+        _userRepositoryMock = new Mock<IUserRepository>();
+        _handler = new CreateUserCommandHandler(_userRepositoryMock.Object);
     }
 
-    // TODO User concrete validator later
     [Fact]
-    public async Task CreateUser_InvalidCommand_ReturnsValidationProblem()
+    public async Task Handle_CallRepositoryCreateUserAndReturnsUser()
     {
-        _createUserValidatorMock
-            .Setup(m => m.ValidateAsync(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ValidationResult(
-                new List<ValidationFailure>
-                {
-                    new ValidationFailure("password", "Password is too weak!")
-                }
-            ))
-            .Verifiable();
         var command = new CreateUserCommand
         {
             Username = "username",
             Password = "password",
-            PasswordConfirmation = "password"
+            PasswordConfirmation = "password",
         };
-        var result = await _controller.CreateUser(command);
+        var user = new User
+        {
+            Id = 1,
+            Username = command.Username,
+            Password = command.Password,
+        };
+        _userRepositoryMock.Setup(m => m
+            .CreateUser(It.Is<User>(u =>
+                u.Username == command.Username
+            )))
+            .Returns(user)
+            .Verifiable();
+        var result = await _handler.Handle(command, default);
 
-        Assert.IsType<ProblemHttpResult>(result);
-
-        var problemResult = (ProblemHttpResult) result;
-        Assert.Equal(StatusCodes.Status400BadRequest, problemResult.StatusCode);
-        _createUserValidatorMock.Verify();
+        Assert.Equal(user, result);
+        _userRepositoryMock.Verify();
     }
 
     [Fact]
-    public async Task CreateUser_ValidCommand_ReturnsOk()
+    public async Task Handle_SamePassword_ReturnsDifferentHash()
     {
-        _createUserValidatorMock
-            .Setup(m => m.ValidateAsync(It.IsAny<CreateUserCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ValidationResult())
-            .Verifiable();
-
-        var resultUser = new User
-        {
-            Id = 1,
-            Username = "username",
-            Password = "password"
-        };
+        var hashedPasswords = new List<string>();
         var command = new CreateUserCommand
         {
-            Username = resultUser.Username,
-            Password = resultUser.Password,
-            PasswordConfirmation = resultUser.Password,
+            Username = "username",
+            Password = "password",
+            PasswordConfirmation = "password",
         };
-        _mediatorMock
-            .Setup(m => m.Send(command, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(resultUser)
-            .Verifiable();
+        _userRepositoryMock.Setup(m => m
+            .CreateUser(It.IsAny<User>()))
+            .Callback<User>(u => hashedPasswords.Add(u.Password!));
+        await _handler.Handle(command, default);
+        await _handler.Handle(command, default);
+        await _handler.Handle(command, default);
+        await _handler.Handle(command, default);
+        await _handler.Handle(command, default);
 
-        var result = await _controller.CreateUser(command);
-
-        Assert.IsType<Ok<User>>(result);
-
-        var okResult = (Ok<User>) result;
-        Assert.Equal(StatusCodes.Status200OK, okResult.StatusCode);
-        Assert.Equal(resultUser, okResult.Value);
-
-        _mediatorMock.Verify();
-        _createUserValidatorMock.Verify();
+        Assert.Distinct(hashedPasswords);
     }
 }
