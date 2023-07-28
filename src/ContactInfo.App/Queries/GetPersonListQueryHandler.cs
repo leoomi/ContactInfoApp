@@ -6,7 +6,7 @@ using ContactInfo.App.Models;
 
 namespace ContactInfo.App.Queries;
 
-public class GetPersonListQueryHandler: IRequestHandler<GetPersonListQuery, IList<Person>>
+public class GetPersonListQueryHandler : IRequestHandler<GetPersonListQuery, MediatorResult<IList<Person>>>
 {
     private readonly IPersonRepository _personRepository;
 
@@ -15,9 +15,17 @@ public class GetPersonListQueryHandler: IRequestHandler<GetPersonListQuery, ILis
         _personRepository = personRepository;
     }
 
-    public Task<IList<Person>> Handle(GetPersonListQuery query, CancellationToken cancellationToken)
+    public Task<MediatorResult<IList<Person>>> Handle(GetPersonListQuery query, CancellationToken cancellationToken)
     {
-        var result = _personRepository.GetPersonList(query.UserId);
-        return Task.FromResult(result);
+        var username = query?.Claims?.Identity?.Name;
+        var userId = query?.Claims?.FindFirst("sub")?.Value;
+
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(userId))
+        {
+            return Task.FromResult(new MediatorResult<IList<Person>>(MediatorError.Unauthorized));
+        }
+
+        var result = _personRepository.GetPersonList(int.Parse(userId));
+        return Task.FromResult(new MediatorResult<IList<Person>>(result));
     }
 }

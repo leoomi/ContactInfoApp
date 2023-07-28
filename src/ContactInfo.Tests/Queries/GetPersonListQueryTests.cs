@@ -18,41 +18,48 @@ public class GetPersonListQueryHandlerTests
     [Fact]
     public async Task Handle_ReturnsEmptyList()
     {
+        var username = "username";
+        var userId = 1;
+        var claims = SetupClaims.CreateClaims(username, userId);
         var query = new GetPersonListQuery
         {
-            UserId = 1,
+            Claims = claims
         };
         _personRepositoryMock
-            .Setup(m => m.GetPersonList(query.UserId))
+            .Setup(m => m.GetPersonList(userId))
             .Returns(new List<Person>())
             .Verifiable();
 
         var result = await _handler.Handle(query, default);
 
-        Assert.Empty(result);
+        Assert.Empty(result.Value!);
         _personRepositoryMock.Verify();
     }
 
     [Fact]
     public async Task Handle_ReturnsList()
     {
+        var username = "username";
+        var userId = 1;
+        var claims = SetupClaims.CreateClaims(username, userId);
         var query = new GetPersonListQuery
         {
-            UserId = 1,
+            Claims = claims
         };
         var personList = new List<Person>
         {
             new Person{ FirstName = "Name 1" },
             new Person{ FirstName = "Name 2" },
         };
+
         _personRepositoryMock
-            .Setup(m => m.GetPersonList(query.UserId))
+            .Setup(m => m.GetPersonList(userId))
             .Returns(personList)
             .Verifiable();
 
         var result = await _handler.Handle(query, default);
 
-        Assert.Equal(personList, result);
+        Assert.Equal(personList, result.Value);
         _personRepositoryMock.Verify();
     }
 }

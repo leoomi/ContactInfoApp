@@ -4,10 +4,7 @@ using ContactInfo.App.Controllers;
 using ContactInfo.App.Models;
 using ContactInfo.App.Queries;
 using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContactInfo.Tests.Controllers;
@@ -29,14 +26,6 @@ public class PersonsControllerTest
     }
 
     [Fact]
-    public async Task GetPersonList_NotAuthenticated_ReturnsUnauthorized()
-    {
-        var result = await _controller.GetPersonList();
-
-        Assert.IsType<UnauthorizedResult>(result.Result);
-    }
-
-    [Fact]
     public async Task GetPersonList_Authenticated_ReturnsOkList()
     {
         var username = "username";
@@ -47,14 +36,84 @@ public class PersonsControllerTest
             new Person { FirstName = "name1"},
             new Person { FirstName = "name2"},
         };
+        var mediatorResult = new MediatorResult<IList<Person>>(personList);
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetPersonListQuery>(), default))
-            .ReturnsAsync(personList);
+            .ReturnsAsync(mediatorResult)
+            .Verifiable();
 
         var result = await _controller.GetPersonList();
 
         Assert.IsType<OkObjectResult>(result.Result);
         var okResult = (OkObjectResult) result.Result;
-        Assert.Equal(personList, okResult.Value);
+        Assert.Equal(mediatorResult, okResult.Value);
+        _mediatorMock.Verify();
+    }
+
+    [Fact]
+    public async Task SavePerson_MediatorError_ReturnsError()
+    {
+        var username = "username";
+        var userId = 1;
+        SetupClaims.AddUserInfo(_controller, username, userId);
+
+        var mediatorResult = new MediatorResult<Person>(MediatorError.Unauthorized);
+        var command = new SavePersonCommand
+        {
+            Id = 1,
+            FirstName = "First",
+        };
+        _mediatorMock
+            .Setup(m => m
+                .Send(It.Is<SavePersonCommand>(c =>
+                    c.Claims!.Identity!.Name == username &&
+                    c.Claims!.FindFirst("sub")!.Value == userId.ToString()
+                ), default))
+            .ReturnsAsync(mediatorResult)
+            .Verifiable();
+
+        var result = await _controller.SavePerson(command);
+
+        Assert.IsType<UnauthorizedResult>(result.Result);
+        _mediatorMock.Verify();
+    }
+
+    [Fact]
+    public async Task SavePerson_SuccesfulCall_ReturnsOkPerson()
+    {
+        var username = "username";
+        var userId = 1;
+        SetupClaims.AddUserInfo(_controller, username, userId);
+
+        var person = new Person
+        {
+            Id = 1,
+            UserId = userId,
+            FirstName = "First"
+        };
+        var mediatorResult = new MediatorResult<Person>(person);
+        var command = new SavePersonCommand
+        {
+            Id = 1,
+            UserId = userId,
+            FirstName = "First",
+        };
+
+        _mediatorMock
+            .Setup(m => m
+                .Send(It.Is<SavePersonCommand>(c =>
+                    c.Claims!.Identity!.Name == username &&
+                    c.Claims!.FindFirst("sub")!.Value == userId.ToString()
+                ), default))
+            .ReturnsAsync(mediatorResult)
+            .Verifiable();
+
+        var result = await _controller.SavePerson(command);
+
+        Assert.IsType<OkObjectResult>(result.Result);
+        var okResult = (OkObjectResult) result.Result;
+
+        Assert.Equal(person, okResult.Value);
+        _mediatorMock.Verify();
     }
 }

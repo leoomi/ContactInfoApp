@@ -30,7 +30,8 @@ public class UsersController : ControllerBase
     public async Task<IResult> CreateUser(CreateUserCommand command)
     {
         var validation = await _createUserValidator.ValidateAsync(command);
-        if (!validation.IsValid) {
+        if (!validation.IsValid)
+        {
             return Results.ValidationProblem(validation.ToDictionary());
         }
 

@@ -31,32 +31,41 @@ public class PersonsController : ControllerBase
     [Authorize]
     public async Task<ActionResult<IList<Person>>> GetPersonList()
     {
-        var user =  User?.Identity?.Name;
-        var id = User?.FindFirst("sub")?.Value;
-        if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(id))
-        {
-            return Unauthorized();
-        }
-
         var result = await _mediator.Send(new GetPersonListQuery
         {
-            UserId = int.Parse(id)
+            Claims = User
         });
+
         return Ok(result);
     }
 
     [HttpPost]
-    [AllowAnonymous]
-    [Route("login/")]
-    public async Task<ActionResult<string?>> Login(LoginQuery query)
+    [Authorize]
+    public async Task<ActionResult<Person>> CreatePerson(CreatePersonCommand command)
     {
-        var result = await _mediator.Send(query);
+        command.Claims = User;
+        var result = await _mediator.Send(command);
 
-        if (result == null)
+        if (!result.IsSuccess)
         {
-            return Unauthorized();
+            return result.ReturnMediatorResultError();
+        }
+        return Ok(result.Value);
+    }
+
+    [HttpPost]
+    [Authorize]
+    [Route("{id}")]
+    public async Task<ActionResult<Person>> SavePerson(SavePersonCommand command)
+    {
+        command.Claims = User;
+        var result = await _mediator.Send(command);
+
+        if (!result.IsSuccess)
+        {
+            return result.ReturnMediatorResultError();
         }
 
-        return Ok(result);
+        return Ok(result.Value);
     }
 }

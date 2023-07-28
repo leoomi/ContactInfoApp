@@ -1,9 +1,10 @@
+using System.Security.Claims;
 using ContactInfo.App.Models;
 using MediatR;
 
 namespace ContactInfo.App.Queries;
 
-public class GetPersonListQuery : IRequest<IList<Person>>
+public class GetPersonListQuery : IRequest<MediatorResult<IList<Person>>>
 {
-    public int UserId { get; set; }
+    public ClaimsPrincipal? Claims { get; set; }
 }

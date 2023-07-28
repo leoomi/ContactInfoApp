@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 public static class SetupClaims
 {
-    public static void AddUserInfo(ControllerBase controller, string name, int id)
+    public static ClaimsPrincipal CreateClaims(string name, int id)
     {
         var claims = new List<Claim>
         {
@@ -13,9 +13,16 @@ public static class SetupClaims
             new Claim(JwtRegisteredClaimNames.Sub, id.ToString())
         };
         var claimsIdentity = new ClaimsIdentity(claims);
+
+        return new ClaimsPrincipal(claimsIdentity);
+    }
+
+    public static void AddUserInfo(ControllerBase controller, string name, int id)
+    {
+        var claimsPrincipal = CreateClaims(name, id);
         controller.ControllerContext.HttpContext = new DefaultHttpContext
         {
-            User = new ClaimsPrincipal(claimsIdentity),
+            User = claimsPrincipal,
         };
     }
 }

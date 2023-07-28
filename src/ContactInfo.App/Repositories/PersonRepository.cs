@@ -28,9 +28,26 @@ public class PersonRepository : IPersonRepository
         return person;
     }
 
+    public Person? GetPerson(int id)
+    {
+        return _context.People?.FirstOrDefault(p => p.Id == id);
+    }
+
     public IList<Person> GetPersonList(int userId)
     {
         var people = _context?.People?.Where(p => p.UserId == userId).ToList();;
         return people ?? new List<Person>();
+    }
+
+    public bool DeletePerson(int id)
+    {
+        var person = GetPerson(id);
+        if (person == null)
+        {
+            return false;
+        }
+
+        _context.People?.Remove(person);
+        return true;
     }
 }
