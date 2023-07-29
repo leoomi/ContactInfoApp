@@ -14,7 +14,8 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
             .MinimumLength(8).WithMessage("Your password length must be at least 8.")
             .Matches(@"[A-Z]+").WithMessage("Your password must contain at least one uppercase letter.")
             .Matches(@"[a-z]+").WithMessage("Your password must contain at least one lowercase letter.");
-        RuleFor(c => new {c.Password, c.PasswordConfirmation})
-            .Must(c => c.Password == c.PasswordConfirmation).WithMessage("Password and password confirmation do not match.");
+        RuleFor(c => c.PasswordConfirmation)
+            .Equal(c => c.Password).WithMessage("The confirmation must match the password.")
+            .WithName("passwordConfirmation");
     }
 }

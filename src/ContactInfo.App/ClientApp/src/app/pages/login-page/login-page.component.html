@@ -1,5 +1,5 @@
 <form [formGroup]="loginForm" novalidate (ngSubmit)="onSubmit()">
-  <mat-card class="shipping-card">
+  <mat-card class="form-card">
     <mat-card-header>
       <mat-card-title>Login</mat-card-title>
     </mat-card-header>
@@ -23,15 +23,19 @@
                 <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
               </button>
               <mat-error *ngIf="loginForm.controls['password'].hasError('required')">
-                First name is <strong>required</strong>
+                Password is <strong>required</strong>
               </mat-error>
             </mat-form-field>
           </div>
         </div>
       </div>
+      <mat-error *ngIf="loginForm.hasError('serverError')">
+        Username or password are invalid!
+      </mat-error>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-raised-button color="primary" type="submit">Submit</button>
+      <button mat-raised-button color="primary" type="submit">Login</button>
+      <button class="sign-up-button" mat-raised-button color="primary" type="button" [routerLink]="['/sign-up']">Sign up</button>
     </mat-card-actions>
   </mat-card>
 </form>

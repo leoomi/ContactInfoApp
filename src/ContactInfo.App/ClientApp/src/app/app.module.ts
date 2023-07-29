@@ -14,7 +14,10 @@ import { AuthGuard } from './guards/auth.guard';
 import { LoginPageModule } from './pages/login-page/login-page.module';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { ToolbarModule } from './toolbar/toolbar.module';
-import { ToolbarComponent } from './toolbar/toolbar.component';
+import { SignUpPageComponent } from './pages/sign-up-page/sign-up-page.component';
+import { SignUpPageModule } from './pages/sign-up-page/sign-up-page.module';
+import { ContactListPageModule } from './pages/contact-list-page/contact-list-page.module';
+import { ContactListPageComponent } from './pages/contact-list-page/contact-list-page.component';
 
 @NgModule({
   declarations: [
@@ -29,16 +32,18 @@ import { ToolbarComponent } from './toolbar/toolbar.component';
     HttpClientModule,
     FormsModule,
     LoginPageModule,
+    SignUpPageModule,
     ToolbarModule,
+    ContactListPageModule,
     RouterModule.forRoot([
       {
         path: '', 
-        component: HomeComponent,
+        component: ContactListPageComponent,
         pathMatch: 'full',
         canActivate: [ AuthGuard ]
       },
       { path: 'login', component: LoginPageComponent },
-      { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'sign-up', component: SignUpPageComponent },
     ]),
     BrowserAnimationsModule
   ],

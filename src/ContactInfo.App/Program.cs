@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json.Serialization;
 using ContactInfo.App;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -31,6 +32,18 @@ builder.Services.AddAuthentication(x =>
         ValidateAudience = false
     };
 });
+ValidatorOptions.Global.PropertyNameResolver = (_, member, _) =>
+{
+    if (member == null)
+    {
+        return null;
+    }
+
+    var head = member.Name[0].ToString().ToLower();
+    var tail = string.Join(string.Empty, member.Name.Skip(1).ToArray());
+
+    return $"{head}{tail}";
+};
 
 var app = builder.Build();
 
