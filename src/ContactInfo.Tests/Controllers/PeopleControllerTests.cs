@@ -9,17 +9,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ContactInfo.Tests.Controllers;
 
-public class PersonsControllerTest
+public class PeopleControllerTest
 {
-    private readonly PersonsController _controller;
+    private readonly PeopleController _controller;
     private readonly Mock<IMediator> _mediatorMock;
     private readonly Mock<IValidator<CreateUserCommand>> _createUserValidatorMock;
 
-    public PersonsControllerTest()
+    public PeopleControllerTest()
     {
         _mediatorMock = new Mock<IMediator>();
         _createUserValidatorMock = new Mock<IValidator<CreateUserCommand>>();
-        _controller = new PersonsController(
+        _controller = new PeopleController(
             _mediatorMock.Object,
             _createUserValidatorMock.Object,
             null);

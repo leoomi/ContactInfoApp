@@ -74,7 +74,7 @@ public class PersonRepositoryTests : IDisposable
         Assert.Equal(2, result2.Id);
         Assert.Equal("First2", result2.FirstName);
         Assert.Equal("Last2", result2.LastName);
- 
+
         Assert.Equal(2, _context.People!.Count());
     }
 
@@ -115,6 +115,76 @@ public class PersonRepositoryTests : IDisposable
 
         Assert.Equal(5, result.Count);
         Assert.True(result.All(p => p.UserId == user.Id));
+    }
+
+    [Fact]
+    public void CreatePerson_WithContacts_SavesContacts()
+    {
+        var user = CreateUser();
+
+        var person = new Person
+        {
+            FirstName = "First",
+            LastName = "Last",
+        };
+        var contacts = new List<Contact>
+        {
+            new Contact { Type = ContactType.Phone, Info = "123456789"},
+            new Contact { Type = ContactType.Email, Info = "test@test.com"},
+        };
+        person.Contacts = contacts;
+        person.UserId = user.Id;
+
+        var result = _repository.CreatePerson(person);
+
+        Assert.True(_context.Contacts!.Any(c => c == contacts[0]));
+        Assert.True(_context.Contacts!.Any(c => c == contacts[1]));
+        Assert.True(_context.Contacts!.All(c => c.PersonId == person.Id));
+        Assert.Equal(2, _context.Contacts!.Count());
+    }
+
+    [Fact]
+    public void SavePerson_WithContacts_SavesContacts()
+    {
+        var user = CreateUser();
+
+        var person = CreatePerson(user.Id);
+        var contacts = new List<Contact>
+        {
+            new Contact { Type = ContactType.Phone, Info = "123456789"},
+            new Contact { Type = ContactType.Email, Info = "test@test.com"},
+        };
+        person.Contacts = contacts;
+
+        var result = _repository.SavePerson(person);
+
+        Assert.True(_context.Contacts!.Any(c => c == contacts[0]));
+        Assert.True(_context.Contacts!.Any(c => c == contacts[1]));
+        Assert.True(_context.Contacts!.All(c => c.PersonId == person.Id));
+        Assert.Equal(2, _context.Contacts!.Count());
+    }
+
+    [Fact]
+    public void GetPersonDetails_ReturnsAllContacts()
+    {
+        var user = CreateUser();
+
+        var person = CreatePerson(user.Id);
+        var contacts = new List<Contact>
+        {
+            new Contact { Type = ContactType.Phone, Info = "123456789"},
+            new Contact { Type = ContactType.Email, Info = "test@test.com"},
+        };
+        person.Contacts = contacts;
+        person.UserId = user.Id;
+        _repository.SavePerson(person);
+
+        var result = _repository.GetPersonWithContacts(person.Id);
+
+        Assert.True(result!.Contacts!.Any(c => c == contacts[0]));
+        Assert.True(result.Contacts!.Any(c => c == contacts[1]));
+        Assert.True(result.Contacts!.All(c => c.PersonId == person.Id));
+        Assert.Equal(2, result.Contacts!.Count());
     }
 
     private Person CreatePerson(int userId)

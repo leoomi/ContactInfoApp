@@ -36,13 +36,10 @@ public class SavePersonCommandHandler : IRequestHandler<SavePersonCommand, Media
             return Task.FromResult(new MediatorResult<Person>(MediatorError.Unauthorized));
         }
 
-        var savedPerson = _personRepository.SavePerson(new Person{
-            Id = command.Id.Value,
-            FirstName = command.FirstName,
-            LastName = command.LastName,
-            Contacts = command.Contacts,
-            UserId = userId,
-        });
+        person.FirstName = command.FirstName;
+        person.LastName = command.LastName;
+        person.Contacts = command.Contacts;
+        var savedPerson = _personRepository.SavePerson(person);
         return Task.FromResult(new MediatorResult<Person>(savedPerson));
     }
 }

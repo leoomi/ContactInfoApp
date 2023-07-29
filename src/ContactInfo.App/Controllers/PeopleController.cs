@@ -9,17 +9,17 @@ using ContactInfo.App.Models;
 namespace ContactInfo.App.Controllers;
 
 [ApiController]
-[Route("/api/persons/")]
-public class PersonsController : ControllerBase
+[Route("/api/people/")]
+public class PeopleController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly IValidator<CreateUserCommand> _createUserValidator;
-    private readonly ILogger<PersonsController> _logger;
+    private readonly ILogger<PeopleController> _logger;
 
-    public PersonsController(
+    public PeopleController(
         IMediator mediator,
         IValidator<CreateUserCommand> createUserValidator,
-        ILogger<PersonsController> logger)
+        ILogger<PeopleController> logger)
     {
         _mediator = mediator;
         _createUserValidator = createUserValidator;
@@ -34,6 +34,30 @@ public class PersonsController : ControllerBase
         {
             Claims = User
         });
+
+        if (!result.IsSuccess)
+        {
+            return result.ReturnMediatorResultError();
+        }
+
+        return Ok(result.Value);
+    }
+
+    [HttpGet]
+    [Authorize]
+    [Route("{id}")]
+    public async Task<ActionResult<IList<Person>>> GetPersonDetails(int id)
+    {
+        var result = await _mediator.Send(new GetPersonDetailsQuery
+        {
+            Id = id,
+            Claims = User
+        });
+
+        if (!result.IsSuccess)
+        {
+            return result.ReturnMediatorResultError();
+        }
 
         return Ok(result.Value);
     }
@@ -57,11 +81,7 @@ public class PersonsController : ControllerBase
     [Route("{id}")]
     public async Task<ActionResult<Person>> SavePerson(SavePersonCommand command, int id)
     {
-        if (command.Id != id)
-        {
-            return BadRequest();
-        }
-
+        command.Id = id;
         command.Claims = User;
         var result = await _mediator.Send(command);
 

@@ -1,4 +1,5 @@
 using ContactInfo.App.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContactInfo.App.Repositories;
 
@@ -36,6 +37,14 @@ public class PersonRepository : IPersonRepository
     {
         var people = _context?.People?.Where(p => p.UserId == userId).ToList();;
         return people ?? new List<Person>();
+    }
+
+    public Person? GetPersonWithContacts(int id)
+    {
+        return _context.People?
+            .Where(p => p.Id == id)
+            .Include(p => p.Contacts)
+            .FirstOrDefault();
     }
 
     public bool DeletePerson(int id)
