@@ -68,7 +68,7 @@ public class GetPersonDetailsQueryHandlerTests
         };
 
         _personRepositoryMock
-            .Setup(m => m.GetPerson(1))
+            .Setup(m => m.GetPersonWithContacts(1))
             .Returns((Person) null)
             .Verifiable();
 
@@ -106,11 +106,7 @@ public class GetPersonDetailsQueryHandlerTests
         };
 
         _personRepositoryMock
-            .Setup(m => m.GetPerson(person.Id))
-            .Returns(person)
-            .Verifiable();
-        _personRepositoryMock
-            .Setup(m => m.SavePerson(It.IsAny<Person>()))
+            .Setup(m => m.GetPersonWithContacts(person.Id))
             .Returns(person)
             .Verifiable();
         var result = await _handler.Handle(command, default);

@@ -98,9 +98,13 @@ public class UsersControllerTest
             Password = "password",
         };
         var token = "token";
+        var loginResponse = new LoginResponse
+        {
+            Token = token,
+        };
         _mediatorMock
             .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(token)
+            .ReturnsAsync(loginResponse)
             .Verifiable();
 
         var result = await _controller.Login(query);
@@ -108,7 +112,7 @@ public class UsersControllerTest
         Assert.IsType<OkObjectResult>(result.Result);
         var okResult = (OkObjectResult) result.Result;
 
-        Assert.Equal(token, okResult.Value);
+        Assert.Equal(loginResponse, okResult.Value);
         _mediatorMock.Verify();
     }
 
@@ -121,8 +125,8 @@ public class UsersControllerTest
             Password = "password",
         };
         _mediatorMock
-            .Setup(m => m.Send<string?>(query, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((string?) null)
+            .Setup(m => m.Send(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((LoginResponse?) null)
             .Verifiable();
 
         var result = await _controller.Login(query);

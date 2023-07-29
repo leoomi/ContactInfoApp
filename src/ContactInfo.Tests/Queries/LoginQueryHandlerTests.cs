@@ -43,7 +43,7 @@ public class LoginQueryHandlerTests
         var result = await _handler.Handle(query, default);
         Assert.NotNull(result);
 
-        var name = _tokenService.GetClaimsName(result);
+        var name = _tokenService.GetClaimsName(result.Token);
 
         Assert.Equal(username, name);
         _userRepositoryMock.Verify();
