@@ -35,11 +35,15 @@ export class SignUpPageComponent {
   }
 
   onSubmit(): void {
+    if (this.signUpForm.invalid) {
+      return;
+    }
+
     this.apiService.post('users/', this.signUpForm.value)
       .subscribe({
         next: (s: any) => {
           this.snackBar.open("User created! Please login.", "", {
-            duration: 3000
+            duration: 5000
           });
           this.router.navigate(['/login']);
         },

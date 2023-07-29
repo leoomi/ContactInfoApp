@@ -26,6 +26,10 @@ export class LoginPageComponent {
   }
 
   onSubmit(): void {
+    if (this.loginForm.invalid) {
+      return;
+    }
+
     this.apiService.post('users/login', this.loginForm.value)
       .subscribe({
         next: (s: any) => {
@@ -38,8 +42,8 @@ export class LoginPageComponent {
             return;
           }
 
-          this.loginForm.setErrors({
-            serverErrors: 'Invalid user and password!'
+          this.loginForm.get('password')!.setErrors({
+            serverError: 'Invalid user and password!'
           });
         }
       });

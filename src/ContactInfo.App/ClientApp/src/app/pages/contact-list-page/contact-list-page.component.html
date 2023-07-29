@@ -9,12 +9,12 @@
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu" xPosition="before">
-              <button mat-menu-item>Sign out</button>
+              <button mat-menu-item (click)="signOut()">Sign out</button>
             </mat-menu>
           </mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content">
-          <div>Card Content Here</div>
+          <mat-spinner></mat-spinner>
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
