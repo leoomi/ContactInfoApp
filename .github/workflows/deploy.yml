@@ -33,3 +33,15 @@ jobs:
         with:
           push: true
           tags: leoomi/contact-info:latest
+
+      - name: Execute SSH commands in EC2 instace to update container
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            docker stop app
+            docker rm app
+            docker pull leoomi/contact-info:latest
+            docker run -d --name app -p 80:80 leoomi/contact-info:latest
