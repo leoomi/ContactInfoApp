@@ -14,6 +14,11 @@ import { SignUpPageComponent } from './pages/sign-up-page/sign-up-page.component
 import { SignUpPageModule } from './pages/sign-up-page/sign-up-page.module';
 import { ContactListPageModule } from './pages/contact-list-page/contact-list-page.module';
 import { ContactListPageComponent } from './pages/contact-list-page/contact-list-page.component';
+import { PersonDetailsPageModule } from './pages/person-details-page/person-details-page.module';
+import { PersonDetailsPageComponent } from './pages/person-details-page/person-details-page.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { PersonFormComponent } from './pages/person-form/person-form.component';
+import { PersonFormModule } from './pages/person-form/person-form.module';
 
 @NgModule({
   declarations: [
@@ -27,6 +32,8 @@ import { ContactListPageComponent } from './pages/contact-list-page/contact-list
     SignUpPageModule,
     ToolbarModule,
     ContactListPageModule,
+    PersonDetailsPageModule,
+    PersonFormModule,
     RouterModule.forRoot([
       {
         path: '', 
@@ -36,8 +43,12 @@ import { ContactListPageComponent } from './pages/contact-list-page/contact-list
       },
       { path: 'login', component: LoginPageComponent },
       { path: 'sign-up', component: SignUpPageComponent },
+      { path: 'person/:id', component: PersonDetailsPageComponent },
+      { path: 'person-form', component: PersonFormComponent },
+      { path: 'person-form/:id', component: PersonFormComponent }
     ]),
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

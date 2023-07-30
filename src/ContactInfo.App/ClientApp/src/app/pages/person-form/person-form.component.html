@@ -1,0 +1,69 @@
+<form [formGroup]="personForm" novalidate (ngSubmit)="onSubmit()">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>Contact Information Form {{ isEdit() }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content *ngIf="showSpinner" class="spinner">
+      <mat-spinner></mat-spinner>
+    </mat-card-content>
+    <mat-card-content *ngIf="!showSpinner">
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="First name" formControlName="firstName">
+            <mat-error *ngIf="personForm.controls['firstName'].hasError('required')">
+              First name is <strong>required</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Last name" formControlName="lastName">
+            <mat-error *ngIf="personForm.controls['lastName'].hasError('required')">
+              Last name is <strong>required</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <mat-divider class="divider"></mat-divider>
+      <ng-container formArrayName="contacts">
+        <div class="row" *ngFor="let contactForm of getContactsField().controls; let idx = index"
+          [formGroup]="contactForm">
+          <div class="contact-type">
+            <mat-form-field class="full-width">
+              <mat-select formControlName="type">
+                <mat-select-trigger>
+                  <fa-icon [icon]="getSelectedIcon(contactForm)"></fa-icon>
+                </mat-select-trigger>
+                <mat-option *ngFor="let option of contactTypeOptions" [value]="option.type">
+                  <fa-icon [icon]="option.icon"></fa-icon>
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="contactForm.controls['type'].hasError('required')">
+                This field is <strong>required</strong>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="contact-info">
+            <mat-form-field class="full-width">
+              <input matInput placeholder="Information" formControlName="info">
+              <button mat-button matSuffix type="button"
+                (click)="deleteContact(idx)"><mat-icon>delete</mat-icon></button>
+              <mat-error *ngIf="contactForm.controls['info'].hasError('required')">
+                This field is <strong>required</strong>
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+      </ng-container>
+      <div class="row">
+        <div class="col centered">
+          <button mat-mini-fab type="button" (click)="addContactForm()"><mat-icon>add</mat-icon></button>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" type="submit">Submit</button>
+    </mat-card-actions>
+  </mat-card>
+</form>

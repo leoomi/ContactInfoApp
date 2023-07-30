@@ -1,0 +1,27 @@
+<div class="grid-container">
+  <mat-card class="card">
+    <mat-card-header>
+      <mat-card-title>
+        Contact Details
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content *ngIf="!person" class="card-content-spinner">
+      <mat-spinner></mat-spinner>
+    </mat-card-content>
+    <mat-card-content *ngIf="person" class="card-content">
+      <h3>{{ person.firstName + " " + person.lastName}}</h3>
+      <mat-divider></mat-divider>
+      <mat-list>
+        <mat-list-item *ngFor="let contact of person.contacts">
+          <fa-icon [icon]="getIcon(contact.type)"></fa-icon>
+          {{ contact.info }}
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" [routerLink]="['/person-form', id]">Edit</button>
+      <button mat-raised-button color="warn" class="delete-button"
+        (click)="delete()"><mat-icon>delete</mat-icon>Delete</button>
+    </mat-card-actions>
+  </mat-card>
+</div>

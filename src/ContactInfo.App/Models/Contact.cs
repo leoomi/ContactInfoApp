@@ -12,9 +12,9 @@ public enum ContactType
 
 public class Contact
 {
-    public int Id { get; set; }
+    public int? Id { get; set; }
     [ForeignKey(nameof(Person))]
-    public int PersonId { get; set; }
+    public int? PersonId { get; set; }
     public ContactType Type { get; set; }
     public string? Info { get; set; }
 }

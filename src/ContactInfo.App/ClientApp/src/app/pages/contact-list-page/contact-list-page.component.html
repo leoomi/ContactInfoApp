@@ -1,22 +1,30 @@
 <div class="grid-container">
-  <mat-grid-list cols="1" rowHeight="350px">
-    <mat-grid-tile>
-      <mat-card class="dashboard-card">
-        <mat-card-header>
-          <mat-card-title>
-            Contacts
-            <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu" xPosition="before">
-              <button mat-menu-item (click)="signOut()">Sign out</button>
-            </mat-menu>
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="dashboard-card-content">
-          <mat-spinner></mat-spinner>
-        </mat-card-content>
-      </mat-card>
-    </mat-grid-tile>
-  </mat-grid-list>
+  <mat-card class="card">
+    <mat-card-header>
+      <mat-card-title>
+        Contacts
+        <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu" xPosition="before">
+          <button mat-menu-item (click)="signOut()">Sign out</button>
+        </mat-menu>
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content *ngIf="!people" class="card-content-spinner">
+      <mat-spinner></mat-spinner>
+    </mat-card-content>
+    <mat-card-content *ngIf="people">
+      <mat-action-list>
+        <mat-list-item class="person-row" *ngFor="let person of people" [routerLink]="['/person', person.id]">
+          <a mat-mini-fab>{{ person.firstName?.charAt(0)?.toUpperCase() }}</a>
+          <span mat-button class="person-name">{{ person.firstName + " " +
+            person.lastName}}</span>
+        </mat-list-item>
+      </mat-action-list>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" [routerLink]="['/person-form']">New contact</button>
+    </mat-card-actions>
+  </mat-card>
 </div>

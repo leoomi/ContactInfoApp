@@ -17,14 +17,10 @@
 .card-content {
   text-align: center;
   display: flex;
-  justify-content: start;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.person-row.mdc-list-item.mdc-list-item--with-one-line {
-  height: auto;
-  margin: 6px 0 6px 0;
-}
-
-.person-name {
-  margin-left: 12px;
+.delete-button {
+    margin-left: 5px;
 }

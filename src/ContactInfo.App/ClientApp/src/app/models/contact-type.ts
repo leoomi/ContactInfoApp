@@ -1,5 +1,5 @@
 enum ContactType {
-    Phone,
+    Phone = 1,
     CompanyPhone,
     Whatsapp,
     Email
