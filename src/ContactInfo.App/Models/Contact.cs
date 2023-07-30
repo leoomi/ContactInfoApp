@@ -2,14 +2,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ContactInfo.App.Models;
 
-public enum ContactType
-{
-    Phone,
-    CompanyPhone,
-    Whatsapp,
-    Email
-}
-
 public class Contact
 {
     public int? Id { get; set; }

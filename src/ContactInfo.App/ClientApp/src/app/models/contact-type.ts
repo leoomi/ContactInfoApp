@@ -2,7 +2,9 @@ enum ContactType {
     Phone = 1,
     CompanyPhone,
     Whatsapp,
-    Email
+    Email,
+    Discord,
+    Instagram
 }
 
 export default ContactType;

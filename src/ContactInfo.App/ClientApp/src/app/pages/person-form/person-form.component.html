@@ -1,7 +1,7 @@
 <form [formGroup]="personForm" novalidate (ngSubmit)="onSubmit()">
   <mat-card class="form-card">
     <mat-card-header>
-      <mat-card-title>Contact Information Form {{ isEdit() }}</mat-card-title>
+      <mat-card-title>Contact Information Form</mat-card-title>
     </mat-card-header>
     <mat-card-content *ngIf="showSpinner" class="spinner">
       <mat-spinner></mat-spinner>
@@ -31,12 +31,13 @@
           [formGroup]="contactForm">
           <div class="contact-type">
             <mat-form-field class="full-width">
-              <mat-select formControlName="type">
+              <mat-select formControlName="type" (blur)="changeContactValidator(idx)">
                 <mat-select-trigger>
-                  <fa-icon [icon]="getSelectedIcon(contactForm)"></fa-icon>
+                  <fa-icon [icon]="getSelectedContactTypeIcon(contactForm)"></fa-icon> {{
+                  getSelectedContactTypeText(contactForm) }}
                 </mat-select-trigger>
                 <mat-option *ngFor="let option of contactTypeOptions" [value]="option.type">
-                  <fa-icon [icon]="option.icon"></fa-icon>
+                  <fa-icon [icon]="option.icon"></fa-icon>&nbsp;{{ option.text }}
                 </mat-option>
               </mat-select>
               <mat-error *ngIf="contactForm.controls['type'].hasError('required')">
@@ -51,6 +52,12 @@
                 (click)="deleteContact(idx)"><mat-icon>delete</mat-icon></button>
               <mat-error *ngIf="contactForm.controls['info'].hasError('required')">
                 This field is <strong>required</strong>
+              </mat-error>
+              <mat-error *ngIf="contactForm.controls['info'].hasError('email')">
+                Invalid email format
+              </mat-error>
+              <mat-error *ngIf="contactForm.controls['info'].hasError('pattern')">
+                Invalid phone format
               </mat-error>
             </mat-form-field>
           </div>

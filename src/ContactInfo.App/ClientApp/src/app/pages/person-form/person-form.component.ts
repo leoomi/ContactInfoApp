@@ -3,19 +3,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Route, Router } from '@angular/router';
-import { IconDefinition, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { IconDefinition, faDiscord, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faPhone, faSuitcase } from '@fortawesome/free-solid-svg-icons';
+import ContactForm from 'src/app/models/contact-form.type';
 import ContactType from 'src/app/models/contact-type';
 import Person from 'src/app/models/person';
 import { ApiService } from 'src/app/services/api.service';
 import { SignOutService } from 'src/app/services/sign-out.service';
 
-type ContactForm = FormGroup<{
-  id: FormControl<number | null>,
-  personId: FormControl<number | null>,
-  info: FormControl<string | null>,
-  type: FormControl<ContactType | null>
-}>;
 
 @Component({
   selector: 'app-person-form',
@@ -32,17 +27,18 @@ export class PersonFormComponent implements OnInit {
   });
 
   contactTypeOptions = [
-    { type: ContactType.Phone, icon: faPhone },
-    { type: ContactType.CompanyPhone, icon: faSuitcase },
-    { type: ContactType.Whatsapp, icon: faWhatsapp },
-    { type: ContactType.Email, icon: faEnvelope },
+    { type: ContactType.Phone, icon: faPhone, text: "Phone" },
+    { type: ContactType.CompanyPhone, icon: faSuitcase, text: "Company Phone" },
+    { type: ContactType.Whatsapp, icon: faWhatsapp, text: "Whatsapp" },
+    { type: ContactType.Email, icon: faEnvelope, text: "Email" },
+    { type: ContactType.Discord, icon: faDiscord, text: "Discord" },
+    { type: ContactType.Instagram, icon: faInstagram, text: "Instagram" }
   ];
 
   id: number | undefined;
   showSpinner = true;
 
-  constructor(private fb: FormBuilder,
-    private snackBar: MatSnackBar,
+  constructor(private snackBar: MatSnackBar,
     private signOutService: SignOutService,
     private apiService: ApiService,
     private router: Router,
@@ -88,9 +84,14 @@ export class PersonFormComponent implements OnInit {
     return this.personForm.controls['contacts'] as FormArray;
   }
 
-  getSelectedIcon(form: ContactForm): IconDefinition {
+  getSelectedContactTypeIcon(form: ContactForm): IconDefinition {
     const type = form.controls['type'].value as ContactType;
     return this.contactTypeOptions[type - 1].icon;
+  }
+
+  getSelectedContactTypeText(form: ContactForm): string {
+    const type = form.controls['type'].value as ContactType;
+    return this.contactTypeOptions[type - 1].text;
   }
 
   onSubmit(): void {
@@ -108,16 +109,16 @@ export class PersonFormComponent implements OnInit {
           },
           error: this.onError
         });
-        return;
+      return;
     }
 
     this.apiService.post<unknown, Person>(`people/${this.id}`, person)
-        .subscribe({
-          next: (person: Person) => {
-            this.router.navigate(['/person', this.id]);
-          },
-          error: this.onError
-        });
+      .subscribe({
+        next: (person: Person) => {
+          this.router.navigate(['/person', this.id]);
+        },
+        error: this.onError
+      });
   }
 
   onError(e: HttpErrorResponse) {
@@ -133,20 +134,45 @@ export class PersonFormComponent implements OnInit {
   }
 
   setFormValues(person: Person) {
-    const contacts = person.contacts?.map((c) => {
-      return {
-        id: c.id!,
-        personId: c.personId!,
-        type: c.type!,
-        info: c.info!
-      }
-    });
-    this.personForm.setValue({
+    this.personForm.patchValue({
       id: person.id!,
       userId: person.userId!,
       firstName: person.firstName!,
       lastName: person.lastName!,
-      contacts: contacts!
+      contacts: [],
     });
+
+    person.contacts?.forEach((c, idx) => {
+      if (idx > 0) {
+        this.addContactForm();
+      }
+      this.getContactsField().at(idx).patchValue({
+        id: c.id!,
+        personId: c.personId!,
+        type: c.type!,
+        info: c.info!
+      });
+      this.changeContactValidator(idx);
+    });
+  }
+
+  changeContactValidator(idx: number) {
+    const formArray = this.personForm.get('contacts') as FormArray;
+    const contactFormGroup = formArray.at(idx) as ContactForm;
+
+    const type = contactFormGroup.get('type')?.value;
+    const infoControl = contactFormGroup.get('info');
+    infoControl?.clearValidators();
+    infoControl?.addValidators(Validators.required);
+
+    if (type === ContactType.Email) {
+      infoControl?.addValidators(Validators.email);
+    }
+    else if (type === ContactType.CompanyPhone || type === ContactType.Phone || type === ContactType.Whatsapp) {
+      infoControl?.addValidators(Validators.pattern(/^\s*(\d{2}|\d{0})[-. ]?(\d{5}|\d{4})[-. ]?(\d{4})[-. ]?\s*$/));
+    }
+
+    infoControl?.updateValueAndValidity();
+    console.log(infoControl?.invalid);
   }
 }

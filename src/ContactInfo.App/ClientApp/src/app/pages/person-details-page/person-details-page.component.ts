@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { faDiscord, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { IconDefinition, faBug, faCoffee, faEnvelope, faPhone, faSuitcase } from '@fortawesome/free-solid-svg-icons';
 import ContactType from 'src/app/models/contact-type';
 import Person from 'src/app/models/person';
@@ -57,6 +57,10 @@ export class PersonDetailsPageComponent implements OnInit {
         return faWhatsapp;
       case ContactType.Email:
         return faEnvelope;
+      case ContactType.Discord:
+        return faDiscord;
+      case ContactType.Instagram:
+        return faInstagram;
       default:
         return faBug;
     }
