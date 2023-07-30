@@ -56,6 +56,7 @@ public class PersonRepository : IPersonRepository
         }
 
         _context.People?.Remove(person);
+        _context.SaveChanges();
         return true;
     }
 }

@@ -19,7 +19,7 @@ export class ApiService {
   }
 
   delete<T>(url: string): Observable<T> {
-    return this.http.get<T>(this.baseUrl + url, this.buildOptionsWithAuthorization());
+    return this.http.delete<T>(this.baseUrl + url, this.buildOptionsWithAuthorization());
   }
 
   buildOptionsWithAuthorization(): { headers: HttpHeaders } {

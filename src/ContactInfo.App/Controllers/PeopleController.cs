@@ -92,4 +92,23 @@ public class PeopleController : ControllerBase
 
         return Ok(result.Value);
     }
+
+    [HttpDelete]
+    [Authorize]
+    [Route("{id}")]
+    public async Task<ActionResult<Person>> DeletePerson(int id)
+    {
+        var result = await _mediator.Send(new DeletePersonCommand
+        {
+            Id = id,
+            Claims = User,
+        });
+
+        if (!result.IsSuccess)
+        {
+            return result.ReturnMediatorResultError();
+        }
+
+        return Ok(result.Value);
+    }
 }

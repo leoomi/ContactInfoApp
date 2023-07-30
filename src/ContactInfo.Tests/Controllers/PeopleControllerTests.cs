@@ -183,4 +183,59 @@ public class PeopleControllerTest
         Assert.Equal(person, okResult.Value);
         _mediatorMock.Verify();
     }
+
+    [Fact]
+    public async Task DeletePerson_SuccesfulCall_ReturnsOk()
+    {
+        var username = "username";
+        var userId = 1;
+        var personId = 2;
+        SetupClaims.AddUserInfo(_controller, username, userId);
+
+        var mediatorResult = new MediatorResult<bool>(true);
+
+        _mediatorMock
+            .Setup(m => m
+                .Send(It.Is<DeletePersonCommand>(c =>
+                    c.Id == personId &&
+                    c.Claims!.Identity!.Name == username &&
+                    c.Claims!.FindFirst(ClaimTypes.NameIdentifier)!.Value == userId.ToString()
+                ), default))
+            .ReturnsAsync(mediatorResult)
+            .Verifiable();
+
+        var result = await _controller.DeletePerson(personId);
+
+        Assert.IsType<OkObjectResult>(result.Result);
+        var okResult = (OkObjectResult) result.Result;
+
+        Assert.Equal(true, okResult.Value);
+        _mediatorMock.Verify();
+    }
+
+    [Fact]
+    public async Task DeletePerson_MediatorError_ReturnsError()
+    {
+        var username = "username";
+        var userId = 1;
+        var personId = 2;
+        SetupClaims.AddUserInfo(_controller, username, userId);
+
+        var mediatorResult = new MediatorResult<bool>(MediatorError.Unauthorized);
+
+        _mediatorMock
+            .Setup(m => m
+                .Send(It.Is<DeletePersonCommand>(c =>
+                    c.Id == personId &&
+                    c.Claims!.Identity!.Name == username &&
+                    c.Claims!.FindFirst(ClaimTypes.NameIdentifier)!.Value == userId.ToString()
+                ), default))
+            .ReturnsAsync(mediatorResult)
+            .Verifiable();
+
+        var result = await _controller.DeletePerson(personId);
+
+        Assert.IsType<UnauthorizedResult>(result.Result);
+        _mediatorMock.Verify();
+    }
 }

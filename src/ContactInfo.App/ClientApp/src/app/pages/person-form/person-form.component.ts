@@ -100,7 +100,7 @@ export class PersonFormComponent implements OnInit {
     }
 
     const person = this.personForm.value;
-    if (!this.isEdit) {
+    if (!this.isEdit()) {
       this.apiService.post<unknown, Person>(`people/`, person)
         .subscribe({
           next: (person: Person) => {

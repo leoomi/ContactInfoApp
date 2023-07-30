@@ -187,6 +187,31 @@ public class PersonRepositoryTests : IDisposable
         Assert.Equal(2, result.Contacts!.Count());
     }
 
+    [Fact]
+    public void DeletePerson_NonExistingPerson_ReturnsNull()
+    {
+        var user = CreateUser();
+        var person = CreatePerson(user.Id);
+
+        var result = _repository.DeletePerson(2);
+
+        Assert.False(result);
+        Assert.Equal(1, _context.People!.Count());
+    }
+
+    [Fact]
+    public void DeletePerson_ExistingPerson_ReturnsTrueAndDeletesUser()
+    {
+        var user = CreateUser();
+        CreatePerson(user.Id);
+        var person = CreatePerson(user.Id);
+
+        var result = _repository.DeletePerson(person.Id);
+
+        Assert.True(result);
+        Assert.Equal(1, _context.People!.Count());
+    }
+
     private Person CreatePerson(int userId)
     {
         var person = new Person
@@ -197,6 +222,9 @@ public class PersonRepositoryTests : IDisposable
         };
         _repository.CreatePerson(person);
 
+        Assert.NotEqual(0, person.Id);
+        Assert.Equal("First", person.FirstName);
+        Assert.Equal("Last", person.LastName);
         return person;
     }
 
