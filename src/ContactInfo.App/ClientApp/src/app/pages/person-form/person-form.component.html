@@ -25,10 +25,10 @@
           </mat-form-field>
         </div>
       </div>
-      <mat-divider class="divider"></mat-divider>
       <ng-container formArrayName="contacts">
         <div class="row" *ngFor="let contactForm of getContactsField().controls; let idx = index"
           [formGroup]="contactForm">
+          <mat-divider class="divider"></mat-divider>
           <div class="contact-type">
             <mat-form-field class="full-width">
               <mat-select formControlName="type" (blur)="changeContactValidator(idx)">
