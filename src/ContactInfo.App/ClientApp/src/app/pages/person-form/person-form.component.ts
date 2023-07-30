@@ -1,8 +1,8 @@
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IconDefinition, faDiscord, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faPhone, faSuitcase } from '@fortawesome/free-solid-svg-icons';
 import ContactForm from 'src/app/models/contact-form.type';
@@ -121,7 +121,7 @@ export class PersonFormComponent implements OnInit {
       });
   }
 
-  onError(e: HttpErrorResponse) {
+  onError = (e: HttpErrorResponse) => {
     if (e.status === HttpStatusCode.Unauthorized) {
       this.signOutService.signOut();
       this.snackBar.open('Session expired. Please, log in again.', '', {
