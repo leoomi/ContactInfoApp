@@ -22,7 +22,7 @@ export class ContactListPageComponent implements OnInit {
   people: Person[] | null = null;
 
   ngOnInit(): void {
-    this.apiService.get<Person[]>("/people")
+    this.apiService.get<Person[]>("people")
       .subscribe({
         next: (people: Person[]) => {
           this.people = people;
