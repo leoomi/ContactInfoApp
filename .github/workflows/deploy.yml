@@ -29,7 +29,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
-        users: docker/build-push-action@v4
+        uses: docker/build-push-action@v4
         with:
           push: true
           tags: leoomi/contact-info:latest
